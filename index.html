@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>College Memories</title>
+
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    /* ================= BODY ================= */
+
+    body {
+      background: #000;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    /* ================= 3D STAR CANVAS ================= */
+
+    #starCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ================= NAVBAR ================= */
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 30px;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+    }
+
+    /* ================= LOGO ================= */
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .logo-section img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+    }
+
+    .logo-text h2 {
+      font-size: 18px;
+      line-height: 1.1;
+      font-weight: 800;
+      color: white;
+    }
+
+    /* ================= NAVIGATION ================= */
+
+    .nav-center {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 18px 40px;
+      border-radius: 60px;
+    }
+
+    .nav-center ul {
+      display: flex;
+      align-items: center;
+      gap: 45px;
+      list-style: none;
+    }
+
+    .nav-center ul li a {
+      text-decoration: none;
+      color: #a1a1aa;
+      font-size: 17px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    .nav-center ul li a:hover {
+      color: #3b82f6;
+      transform: scale(1.18);
+      text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+    }
+
+    .nav-center ul li a.active {
+      color: #3b82f6;
+      text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+    }
+
+    /* ================= LOGIN BUTTON ================= */
+
+    .signin-btn {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 12px 14px 12px 30px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 60px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .signin-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .signin-btn span {
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .arrow-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: white;
+      color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    /* ================= SECTIONS ================= */
+
+    section {
+      padding: 120px 50px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ================= HERO ================= */
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero h2 {
+      font-size: 90px;
+      line-height: 1.1;
+      margin-bottom: 25px;
+    }
+
+    .hero span {
+      display: block;
+      background: linear-gradient(90deg, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      max-width: 850px;
+      margin: auto;
+      font-size: 26px;
+      color: #d1d5db;
+      margin-bottom: 40px;
+    }
+
+    .btn {
+      padding: 18px 45px;
+      border: none;
+      border-radius: 15px;
+      background: linear-gradient(90deg, #9333ea, #7e22ce);
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* ================= TITLES ================= */
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+      font-size: 50px;
+      margin-bottom: 15px;
+    }
+
+    .section-title p {
+      color: #cbd5e1;
+      font-size: 18px;
+    }
+
+    /* ================= GRID ================= */
+
+    .clubs-container,
+    .gallery-container,
+    .events-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    /* ================= CARD ================= */
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 25px;
+      overflow: hidden;
+      transition: 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      border-color: #a855f7;
+    }
+
+    .card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 25px;
+    }
+
+    .card-content h3 {
+      font-size: 32px;
+      margin-bottom: 15px;
+      color: #a855f7;
+    }
+
+    .card-content p {
+      color: #d1d5db;
+      margin-bottom: 12px;
+      font-size: 17px;
+    }
+
+    /* ================= GALLERY ================= */
+
+    .gallery-container img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+      border-radius: 20px;
+      transition: 0.3s;
+    }
+
+    .gallery-container img:hover {
+      transform: scale(1.03);
+    }
+
+    /* ================= FOOTER ================= */
+
+    .footer {
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      padding: 50px 40px 20px;
+      margin-top: 80px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-container {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      gap: 40px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+
+    .footer-logo img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+
+    .footer-logo h2 {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .footer-tagline {
+      color: #2563eb;
+      letter-spacing: 2px;
+      font-size: 14px;
+      margin-bottom: 35px;
+    }
+
+    .contact-box h3 {
+      font-size: 26px;
+      margin-bottom: 15px;
+    }
+
+    .contact-box p {
+      font-size: 20px;
+      color: white;
+    }
+
+    .footer-center h2,
+    .footer-right h2 {
+      font-size: 28px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 45px;
+    }
+
+    .footer-links div {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .footer-links a {
+      color: #d1d5db;
+      text-decoration: none;
+      font-size: 18px;
+      transition: 0.3s;
+    }
+
+    .footer-links a:hover {
+      color: #3b82f6;
+      transform: translateX(5px);
+    }
+
+    .social-box {
+      display: flex;
+      gap: 18px;
+      margin-top: 10px;
+    }
+
+    .social-box a {
+      font-size: 32px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .social-box a:hover {
+      transform: scale(1.15);
+    }
+
+    .robot-box {
+      font-size: 70px;
+      margin-top: 20px;
+      text-align: right;
+    }
+
+    .footer-line {
+      width: 100%;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.2);
+      margin: 35px 0 18px;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    /* ================= MOBILE ================= */
+
+    @media(max-width: 1100px) {
+
+      .navbar {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .nav-center ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .hero h2 {
+        font-size: 50px;
+      }
+
+      .hero p {
+        font-size: 18px;
+      }
+
+      section {
+        padding: 140px 20px;
+      }
+
+      .footer-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .footer-logo {
+        justify-content: center;
+      }
+
+      .footer-links {
+        justify-content: center;
+      }
+
+      .social-box {
+        justify-content: center;
+      }
+
+      .robot-box {
+        text-align: center;
+      }
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <!-- ================= 3D STAR CANVAS ================= -->
+
+  <canvas id="starCanvas"></canvas>
+
+  <!-- ================= NAVBAR ================= -->
+
+  <nav class="navbar">
+
+    <a href="#home" class="logo-section" id="homeLogo">
+
+      <img src="logo.png" alt="logo">
+
+      <div class="logo-text">
+        <h2>INSTITUTE OF</h2>
+        <h2>INNOVATION</h2>
+      </div>
+
+    </a>
+
+    <div class="nav-center">
+      <ul>
+        <li><a href="#home" class="active">HOME</a></li>
+        <li><a href="#clubs">CLUBS</a></li>
+        <li><a href="#gallery">GALLERY</a></li>
+        <li><a href="#sponsors">SPONSORS</a></li>
+        <li><a href="#events">EVENTS</a></li>
+      </ul>
+    </div>
+
+    <a href="login.html" class="signin-btn">
+      <span>LOGIN</span>
+      <div class="arrow-circle">↗</div>
+    </a>
+
+  </nav>
+
+  <!-- ================= HOME ================= -->
+
+  <section class="hero" id="home">
+
+    <div class="overlay"></div>
+
+    <div class="hero-content">
+
+      <h2>
+        Preserve Every
+        <span>College Memory</span>
+      </h2>
+
+      <p>
+        A digital platform where all college
+        events, memories, club achievements,
+        photos and sponsors are stored forever.
+      </p>
+
+      <button class="btn">Explore Memories</button>
+
+    </div>
+
+  </section>
+
+  <!-- ================= CLUBS ================= -->
+
+  <section id="clubs">
+
+    <div class="section-title">
+      <h2>Our Clubs</h2>
+      <p>Explore all clubs and their achievements.</p>
+    </div>
+
+    <div class="clubs-container">
+
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop">
+        <div class="card-content">
+          <h3>Tech Club</h3>
+          <p><b>President:</b> Pranav Sharma</p>
+          <p>Hackathons, coding competitions, technical workshops and projects.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1200&auto=format&fit=crop">
+        <div class="card-content">
+          <h3>Social Welfare Club</h3>
+          <p><b>President:</b> Prince Yadav</p>
+          <p>Charity events and awareness programs.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ================= GALLERY ================= -->
+
+  <section id="gallery">
+
+    <div class="section-title">
+      <h2>Gallery</h2>
+      <p>Relive unforgettable moments.</p>
+    </div>
+
+    <div class="gallery-container">
+      <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1200&auto=format&fit=crop">
+      <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop">
+      <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop">
+    </div>
+
+  </section>
+
+  <!-- ================= SPONSORS ================= -->
+
+  <section id="sponsors">
+
+    <div class="section-title">
+      <h2>Our Sponsors</h2>
+      <p>Proud partners supporting our college events.</p>
+    </div>
+
+    <div class="clubs-container">
+
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1200&auto=format&fit=crop">
+        <div class="card-content">
+          <h3>TechNova</h3>
+          <p>Main sponsor of coding competitions and hackathons.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1200&auto=format&fit=crop">
+        <div class="card-content">
+          <h3>EduFuture</h3>
+          <p>Supporting educational innovation and workshops.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop">
+        <div class="card-content">
+          <h3>CodeCraft</h3>
+          <p>Partner for technical events and robotics activities.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ================= EVENTS ================= -->
+
+  <section id="events">
+
+    <div class="section-title">
+      <h2>Upcoming Events</h2>
+      <p>Stay updated with all activities.</p>
+    </div>
+
+    <div class="events-container">
+
+      <div class="card">
+        <div class="card-content">
+          <h3>National Hackathon</h3>
+          <p>Date: June 12, 2026</p>
+          <button class="btn">Register</button>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+
+  <footer class="footer">
+
+    <div class="footer-container">
+
+      <div class="footer-left">
+
+        <div class="footer-logo">
+          <img src="logo.png" alt="logo">
+          <h2>INSTITUTE OF INNOVATION</h2>
+        </div>
+
+        <p class="footer-tagline">INNOVATING FOR A SUSTAINABLE FUTURE</p>
+
+        <div class="contact-box">
+          <h3>Contact Us:</h3>
+          <p>✉ studentsuccess@pwioi.com</p>
+        </div>
+
+      </div>
+
+      <div class="footer-center">
+
+        <h2>Quick Access</h2>
+
+        <div class="footer-links">
+          <div>
+            <a href="#home">Home</a>
+            <a href="#clubs">Clubs</a>
+            <a href="#gallery">Gallery</a>
+          </div>
+          <div>
+            <a href="#sponsors">Sponsors</a>
+            <a href="#events">Events</a>
+            <a href="#">Contact</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-right">
+
+        <h2>Follow Us</h2>
+
+        <div class="social-box">
+          <a href="https://www.instagram.com/aryaaryanpro922?igsh=ZTlmank4a3ppOHRh"><i class="fa-brands fa-instagram" style="color: magenta;"></i></a>
+          <a href="https://www.linkedin.com/in/aryankumaryadav73?utm_source=share_via&utm_content=profile&utm_medium=member_android"><i class="fa-brands fa-linkedin"></i></a>
+          <a href="https://youtube.com/@pw-ioi?si=QukHeBpd_92y2Q3F"><i class="fa-brands fa-youtube" style="color: red;"></i></a>
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="https://wa.link/3156q6"><i class="fa-brands fa-whatsapp" style="color: green;"></i></a>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="footer-line"></div>
+
+    <div class="footer-bottom">
+      © 2026 College Memories Platform | All Rights Reserved
+    </div>
+
+  </footer>
+
+  <!-- ================= THREE.JS CDN ================= -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- ================= JAVASCRIPT ================= -->
+
+  <script>
+
+    /* =========================================
+       3D STAR FIELD BACKGROUND
+    ========================================= */
+
+    const canvas = document.getElementById('starCanvas');
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true
+    });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      2000
+    );
+
+    camera.position.z = 1;
+
+    /* --- Generate Stars --- */
+
+    const starCount = 8000;
+    const positions = new Float32Array(starCount * 3);
+    const sizes     = new Float32Array(starCount);
+
+    for (let i = 0; i < starCount; i++) {
+      positions[i * 3]     = (Math.random() - 0.5) * 2000;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 2000;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 2000;
+      sizes[i] = Math.random() * 2 + 0.5;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('size',     new THREE.BufferAttribute(sizes,     1));
+
+    const material = new THREE.PointsMaterial({
+      color:           0xffffff,
+      size:            1.2,
+      sizeAttenuation: true,
+      transparent:     true,
+      opacity:         0.85
+    });
+
+    const stars = new THREE.Points(geometry, material);
+    scene.add(stars);
+
+    /* --- Mouse Tracking --- */
+
+    let mouseX = 0, mouseY = 0;
+    let targetX = 0, targetY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    /* --- Resize Handler --- */
+
+    window.addEventListener('resize', () => {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    });
+
+    /* --- Animation Loop --- */
+
+    function animate() {
+
+      requestAnimationFrame(animate);
+
+      // Smooth easing towards mouse position
+      targetX += (mouseX - targetX) * 0.04;
+      targetY += (mouseY - targetY) * 0.04;
+
+      // Rotate star field based on mouse
+      stars.rotation.y =  targetX * 0.4;
+      stars.rotation.x =  targetY * 0.2;
+
+      // Slow continuous auto-drift
+      stars.rotation.z += 0.0003;
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    /* =========================================
+       NAVIGATION LOGIC
+    ========================================= */
+
+    const navLinks = document.querySelectorAll('.nav-center ul li a');
+
+    const sections = [
+      '#home',
+      '#clubs',
+      '#gallery',
+      '#sponsors',
+      '#events'
+    ];
+
+    let activeLink = document.querySelector('a[href="#home"]');
+
+    /* --- Show Section Function --- */
+
+    function showSection(target) {
+
+      if (target === '#home') {
+
+        document.querySelector('#home').style.display    = 'flex';
+        document.querySelector('#clubs').style.display   = 'block';
+        document.querySelector('#gallery').style.display = 'block';
+        document.querySelector('#sponsors').style.display = 'block';
+        document.querySelector('#events').style.display  = 'block';
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      } else {
+
+        sections.forEach(section => {
+          document.querySelector(section).style.display =
+            section === target ? 'block' : 'none';
+        });
+
+      }
+    }
+
+    /* --- Nav Click --- */
+
+    navLinks.forEach(link => {
+
+      link.addEventListener('click', function(e) {
+
+        e.preventDefault();
+
+        navLinks.forEach(item => {
+          item.classList.remove('active');
+          item.style.color      = '#a1a1aa';
+          item.style.textShadow = 'none';
+          item.style.transform  = 'scale(1)';
+        });
+
+        this.classList.add('active');
+        this.style.color      = '#3b82f6';
+        this.style.textShadow = '0 0 10px #3b82f6, 0 0 20px #3b82f6';
+        activeLink = this;
+
+        showSection(this.getAttribute('href'));
+
+      });
+
+      /* --- Hover In --- */
+
+      link.addEventListener('mouseenter', function() {
+        if (this !== activeLink) {
+          this.style.color      = '#3b82f6';
+          this.style.transform  = 'scale(1.18)';
+          this.style.textShadow = '0 0 10px #3b82f6, 0 0 20px #3b82f6';
+        }
+      });
+
+      /* --- Hover Out --- */
+
+      link.addEventListener('mouseleave', function() {
+        if (this !== activeLink) {
+          this.style.color      = '#a1a1aa';
+          this.style.transform  = 'scale(1)';
+          this.style.textShadow = 'none';
+        }
+      });
+
+    });
+
+    /* --- Logo Click --- */
+
+    const homeLogo = document.getElementById('homeLogo');
+
+    homeLogo.addEventListener('click', function(e) {
+
+      e.preventDefault();
+
+      navLinks.forEach(item => {
+        item.classList.remove('active');
+        item.style.color      = '#a1a1aa';
+        item.style.textShadow = 'none';
+        item.style.transform  = 'scale(1)';
+      });
+
+      const homeLink = document.querySelector('a[href="#home"]');
+      homeLink.classList.add('active');
+      homeLink.style.color      = '#3b82f6';
+      homeLink.style.textShadow = '0 0 10px #3b82f6, 0 0 20px #3b82f6';
+      activeLink = homeLink;
+
+      showSection('#home');
+
+    });
+
+  </script>
+
+</body>
+
+</html>
