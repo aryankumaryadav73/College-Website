@@ -1,495 +1,480 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+
+    <script>
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+        window.location.href = "login.html";
+    }
+    </script>
+
+
+    <!-- your existing code -->
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
   <title>College Memories</title>
-
   <style>
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-      scroll-behavior: smooth;
+    * { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; scroll-behavior:smooth; }
+    body { background:#000; color:white; overflow-x:hidden; }
+
+    #starCanvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+
+    .navbar { position:fixed; top:0; left:0; width:100%; display:flex; justify-content:space-between; align-items:center; padding:20px 30px; background:rgba(0,0,0,0.75); backdrop-filter:blur(12px); z-index:1000; }
+    .logo-section { display:flex; align-items:center; gap:15px; text-decoration:none; cursor:pointer; }
+    .logo-section img { width:70px; height:70px; object-fit:contain; }
+    .logo-text h2 { font-size:18px; line-height:1.1; font-weight:800; color:white; }
+
+    .nav-center { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); padding:18px 40px; border-radius:60px; }
+    .nav-center ul { display:flex; align-items:center; gap:45px; list-style:none; }
+    .nav-center ul li a { text-decoration:none; color:#a1a1aa; font-size:17px; font-weight:700; transition:all 0.3s ease; display:inline-block; }
+    .nav-center ul li a:hover { color:#3b82f6; transform:scale(1.18); text-shadow:0 0 10px #3b82f6, 0 0 20px #3b82f6; }
+    .nav-center ul li a.active { color:#3b82f6; text-shadow:0 0 10px #3b82f6, 0 0 20px #3b82f6; }
+
+    .signin-btn { display:flex; align-items:center; gap:18px; padding:12px 14px 12px 30px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:60px; text-decoration:none; transition:0.3s; }
+    .signin-btn:hover { transform:scale(1.05); }
+    .signin-btn span { color:white; font-size:18px; font-weight:700; }
+    .arrow-circle { width:48px; height:48px; border-radius:50%; background:white; color:black; display:flex; justify-content:center; align-items:center; font-size:22px; font-weight:bold; }
+
+    section { padding:120px 50px; position:relative; z-index:1; }
+
+    .hero { position:relative; min-height:100vh; display:flex; justify-content:center; align-items:center; text-align:center; overflow:hidden; }
+    .overlay { position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.45); }
+    .hero-content { position:relative; z-index:2; }
+    .hero h2 { font-size:90px; line-height:1.1; margin-bottom:25px; }
+    .hero span { display:block; background:linear-gradient(90deg,#a855f7,#ec4899); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .hero p { max-width:850px; margin:auto; font-size:26px; color:#d1d5db; margin-bottom:40px; }
+    .btn { padding:18px 45px; border:none; border-radius:15px; background:linear-gradient(90deg,#9333ea,#7e22ce); color:white; font-size:20px; cursor:pointer; transition:0.3s; }
+    .btn:hover { transform:scale(1.05); }
+
+    .section-title { text-align:center; margin-bottom:60px; }
+    .section-title h2 { font-size:50px; margin-bottom:15px; }
+    .section-title p { color:#cbd5e1; font-size:18px; }
+
+    .gallery-container, .events-container { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:30px; }
+
+    /* Non-club cards stay exactly the same */
+    .card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:25px; overflow:hidden; transition:0.3s; backdrop-filter:blur(10px); }
+    .card:hover { transform:translateY(-10px); border-color:#a855f7; }
+    .card img { width:100%; height:240px; object-fit:cover; }
+    .card-content { padding:25px; }
+    .card-content h3 { font-size:32px; margin-bottom:15px; color:#a855f7; }
+    .card-content p { color:#d1d5db; margin-bottom:12px; font-size:17px; }
+
+    .gallery-container img { width:100%; height:320px; object-fit:cover; border-radius:20px; transition:0.3s; }
+    .gallery-container img:hover { transform:scale(1.03); }
+
+    /* ============================================================
+       CLUBS SECTION - REDESIGNED
+    ============================================================ */
+
+    #clubs { position:relative; overflow:hidden; }
+
+    /* Big ambient glow behind section */
+    #clubs::before {
+      content:'';
+      position:absolute;
+      top:-100px; left:50%;
+      transform:translateX(-50%);
+      width:900px; height:900px;
+      background:radial-gradient(circle, rgba(168,85,247,0.07) 0%, transparent 70%);
+      pointer-events:none; z-index:0;
     }
 
-    /* ================= BODY ================= */
+    #clubs .section-title { position:relative; z-index:1; margin-bottom:70px; }
 
-    body {
-      background: #000;
-      color: white;
-      overflow-x: hidden;
+    #clubs .section-title h2 {
+      font-family:'Bebas Neue', sans-serif;
+      font-size:80px;
+      letter-spacing:8px;
+      background:linear-gradient(135deg, #fff 20%, #c084fc 55%, #ec4899 90%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:12px;
     }
 
-    /* ================= 3D STAR CANVAS ================= */
-
-    #starCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
+    #clubs .section-title p {
+      font-family:'Outfit', sans-serif;
+      font-size:15px;
+      color:#64748b;
+      letter-spacing:4px;
+      text-transform:uppercase;
     }
 
-    /* ================= NAVBAR ================= */
-
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 30px;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(12px);
-      z-index: 1000;
+    /* Club grid */
+    .clubs-container {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+      gap:24px;
+      position:relative;
+      z-index:1;
     }
 
-    /* ================= LOGO ================= */
-
-    .logo-section {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      text-decoration: none;
-      cursor: pointer;
+    /* ---- Individual Club Card ---- */
+    .club-card {
+      position:relative;
+      border-radius:22px;
+      overflow:hidden;
+      background:#080808;
+      border:1px solid rgba(255,255,255,0.06);
+      transition:
+        transform 0.45s cubic-bezier(0.23,1,0.32,1),
+        box-shadow 0.45s ease,
+        border-color 0.45s ease;
+      opacity:0;
+      transform:translateY(50px);
     }
 
-    .logo-section img {
-      width: 70px;
-      height: 70px;
-      object-fit: contain;
+    .club-card.visible {
+      animation:clubReveal 0.65s cubic-bezier(0.23,1,0.32,1) forwards;
     }
 
-    .logo-text h2 {
-      font-size: 18px;
-      line-height: 1.1;
-      font-weight: 800;
-      color: white;
+    @keyframes clubReveal {
+      to { opacity:1; transform:translateY(0); }
     }
 
-    /* ================= NAVIGATION ================= */
-
-    .nav-center {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 18px 40px;
-      border-radius: 60px;
+    .club-card:hover {
+      transform:translateY(-14px) scale(1.015);
     }
 
-    .nav-center ul {
-      display: flex;
-      align-items: center;
-      gap: 45px;
-      list-style: none;
+    /* Shimmer sweep */
+    .club-card::after {
+      content:'';
+      position:absolute;
+      top:0; left:-80%;
+      width:50%; height:100%;
+      background:linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.055) 50%, transparent 65%);
+      transition:left 0.65s ease;
+      z-index:20; pointer-events:none;
+    }
+    .club-card:hover::after { left:150%; }
+
+    /* Image area */
+    .club-img-wrap { position:relative; height:210px; overflow:hidden; }
+    .club-img-wrap img {
+      width:100%; height:100%;
+      object-fit:cover;
+      transition:transform 0.65s cubic-bezier(0.23,1,0.32,1), filter 0.5s ease;
+      filter:brightness(0.65) saturate(1.1);
+    }
+    .club-card:hover .club-img-wrap img {
+      transform:scale(1.1);
+      filter:brightness(0.85) saturate(1.4);
     }
 
-    .nav-center ul li a {
-      text-decoration: none;
-      color: #a1a1aa;
-      font-size: 17px;
-      font-weight: 700;
-      transition: all 0.3s ease;
-      display: inline-block;
+    /* Dark gradient from bottom of image into body */
+    .club-img-wrap::after {
+      content:'';
+      position:absolute; bottom:0; left:0;
+      width:100%; height:65%;
+      background:linear-gradient(to top, #080808 0%, transparent 100%);
     }
 
-    .nav-center ul li a:hover {
-      color: #3b82f6;
-      transform: scale(1.18);
-      text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+    /* Floating icon badge */
+    .club-icon-badge {
+      position:absolute;
+      top:14px; right:14px;
+      width:46px; height:46px;
+      border-radius:13px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:19px;
+      z-index:5;
+      backdrop-filter:blur(16px);
+      border:1px solid rgba(255,255,255,0.12);
+      background:var(--club-bg);
+      color:var(--club-color);
+      transition:transform 0.35s ease, box-shadow 0.35s ease;
+    }
+    .club-card:hover .club-icon-badge {
+      transform:scale(1.2) rotate(8deg);
+      box-shadow:0 0 20px var(--club-glow);
     }
 
-    .nav-center ul li a.active {
-      color: #3b82f6;
-      text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+    /* Big faint number */
+    .club-number {
+      position:absolute;
+      bottom:10px; left:16px;
+      font-family:'Bebas Neue', sans-serif;
+      font-size:64px; line-height:1;
+      color:rgba(255,255,255,0.04);
+      z-index:4; pointer-events:none;
+      transition:color 0.4s ease;
+    }
+    .club-card:hover .club-number { color:var(--club-number-hover); }
+
+    /* Card body */
+    .club-body { padding:20px 22px 24px; position:relative; }
+
+    /* Colored accent bar */
+    .club-accent {
+      width:32px; height:3px;
+      border-radius:2px;
+      background:var(--club-color);
+      margin-bottom:14px;
+      transition:width 0.4s ease, box-shadow 0.4s ease;
+    }
+    .club-card:hover .club-accent {
+      width:72px;
+      box-shadow:0 0 12px var(--club-glow);
     }
 
-    /* ================= LOGIN BUTTON ================= */
-
-    .signin-btn {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      padding: 12px 14px 12px 30px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 60px;
-      text-decoration: none;
-      transition: 0.3s;
+    /* Club name */
+    .club-body h3 {
+      font-family:'Bebas Neue', sans-serif;
+      font-size:28px;
+      letter-spacing:2px;
+      color:#f1f5f9;
+      margin-bottom:8px;
+      line-height:1;
     }
 
-    .signin-btn:hover {
-      transform: scale(1.05);
+    /* President row */
+    .club-president {
+      display:flex; align-items:center; gap:7px;
+      margin-bottom:11px;
+    }
+    .club-pres-dot {
+      width:5px; height:5px;
+      border-radius:50%;
+      background:var(--club-color);
+      flex-shrink:0;
+      box-shadow:0 0 6px var(--club-glow);
+    }
+    .club-president span {
+      font-family:'Outfit', sans-serif;
+      font-size:12px; font-weight:600;
+      letter-spacing:1.2px;
+      text-transform:uppercase;
+      color:#64748b;
+    }
+    .club-president strong {
+      color:#cbd5e1; font-weight:600;
     }
 
-    .signin-btn span {
-      color: white;
-      font-size: 18px;
-      font-weight: 700;
+    /* Description */
+    .club-body p.club-desc {
+      font-family:'Outfit', sans-serif;
+      font-size:14.5px;
+      color:#64748b;
+      line-height:1.7;
+      margin-bottom:18px;
     }
 
-    .arrow-circle {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: white;
-      color: black;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 22px;
-      font-weight: bold;
+    /* Explore pill button */
+    .club-pill {
+      display:inline-flex; align-items:center; gap:7px;
+      padding:8px 18px;
+      border-radius:50px;
+      font-family:'Outfit', sans-serif;
+      font-size:12px; font-weight:700;
+      letter-spacing:1.2px;
+      text-transform:uppercase;
+      border:1px solid rgba(255,255,255,0.09);
+      background:rgba(255,255,255,0.03);
+      color:#94a3b8;
+      cursor:pointer;
+      transition:all 0.35s ease;
+      text-decoration:none;
+    }
+    .club-pill .pill-arrow { transition:transform 0.35s ease; }
+    .club-card:hover .club-pill {
+      background:var(--club-bg);
+      border-color:var(--club-color);
+      color:var(--club-color);
+      box-shadow:0 0 16px var(--club-glow);
+    }
+    .club-card:hover .club-pill .pill-arrow { transform:translateX(5px); }
+
+    /* Bottom glow line */
+    .club-glow-line {
+      position:absolute;
+      bottom:0; left:0;
+      width:0%; height:2px;
+      background:linear-gradient(90deg, var(--club-color), transparent);
+      transition:width 0.5s ease;
+      border-radius:0 0 22px 22px;
+    }
+    .club-card:hover .club-glow-line { width:100%; }
+
+    /* Per-card color vars */
+    .club-card[data-theme="tech"]     { --club-color:#3b82f6; --club-bg:rgba(59,130,246,0.12);  --club-glow:rgba(59,130,246,0.4);  --club-number-hover:rgba(59,130,246,0.1); }
+    .club-card[data-theme="welfare"]  { --club-color:#10b981; --club-bg:rgba(16,185,129,0.12);  --club-glow:rgba(16,185,129,0.4);  --club-number-hover:rgba(16,185,129,0.1); }
+    .club-card[data-theme="sports"]   { --club-color:#f59e0b; --club-bg:rgba(245,158,11,0.12);  --club-glow:rgba(245,158,11,0.4);  --club-number-hover:rgba(245,158,11,0.1); }
+    .club-card[data-theme="cultural"] { --club-color:#ec4899; --club-bg:rgba(236,72,153,0.12);  --club-glow:rgba(236,72,153,0.4);  --club-number-hover:rgba(236,72,153,0.1); }
+    .club-card[data-theme="content"]  { --club-color:#06b6d4; --club-bg:rgba(6,182,212,0.12);   --club-glow:rgba(6,182,212,0.4);   --club-number-hover:rgba(6,182,212,0.1); }
+    .club-card[data-theme="business"] { --club-color:#f97316; --club-bg:rgba(249,115,22,0.12);  --club-glow:rgba(249,115,22,0.4);  --club-number-hover:rgba(249,115,22,0.1); }
+    .club-card[data-theme="robotics"] { --club-color:#a855f7; --club-bg:rgba(168,85,247,0.12);  --club-glow:rgba(168,85,247,0.4);  --club-number-hover:rgba(168,85,247,0.1); }
+
+    /* Hover border glow per theme */
+    .club-card[data-theme="tech"]:hover     { border-color:rgba(59,130,246,0.55);  box-shadow:0 24px 60px rgba(59,130,246,0.2), 0 0 0 1px rgba(59,130,246,0.2); }
+    .club-card[data-theme="welfare"]:hover  { border-color:rgba(16,185,129,0.55);  box-shadow:0 24px 60px rgba(16,185,129,0.2), 0 0 0 1px rgba(16,185,129,0.2); }
+    .club-card[data-theme="sports"]:hover   { border-color:rgba(245,158,11,0.55);  box-shadow:0 24px 60px rgba(245,158,11,0.2), 0 0 0 1px rgba(245,158,11,0.2); }
+    .club-card[data-theme="cultural"]:hover { border-color:rgba(236,72,153,0.55);  box-shadow:0 24px 60px rgba(236,72,153,0.2), 0 0 0 1px rgba(236,72,153,0.2); }
+    .club-card[data-theme="content"]:hover  { border-color:rgba(6,182,212,0.55);   box-shadow:0 24px 60px rgba(6,182,212,0.2),  0 0 0 1px rgba(6,182,212,0.2); }
+    .club-card[data-theme="business"]:hover { border-color:rgba(249,115,22,0.55);  box-shadow:0 24px 60px rgba(249,115,22,0.2), 0 0 0 1px rgba(249,115,22,0.2); }
+    .club-card[data-theme="robotics"]:hover { border-color:rgba(168,85,247,0.55);  box-shadow:0 24px 60px rgba(168,85,247,0.2), 0 0 0 1px rgba(168,85,247,0.2); }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+
+    .footer { background:rgba(0,0,0,0.75); backdrop-filter:blur(12px); padding:50px 40px 20px; margin-top:80px; border-top:1px solid rgba(255,255,255,0.1); position:relative; z-index:1; }
+    .footer-container { display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:40px; }
+    .footer-logo { display:flex; align-items:center; gap:15px; margin-bottom:18px; }
+    .footer-logo img { width:60px; height:60px; object-fit:contain; }
+    .footer-logo h2 { font-size:24px; font-weight:800; }
+    .footer-tagline { color:#2563eb; letter-spacing:2px; font-size:14px; margin-bottom:35px; }
+    .contact-box h3 { font-size:26px; margin-bottom:15px; }
+    .contact-box p { font-size:20px; color:white; }
+    .footer-center h2, .footer-right h2 { font-size:28px; margin-bottom:25px; text-align:center; }
+    .footer-links { display:flex; gap:45px; }
+    .footer-links div { display:flex; flex-direction:column; gap:15px; }
+    .footer-links a { color:#d1d5db; text-decoration:none; font-size:18px; transition:0.3s; }
+    .footer-links a:hover { color:#3b82f6; transform:translateX(5px); }
+    .social-box { display:flex; gap:18px; margin-top:10px; }
+    .social-box a { font-size:32px; text-decoration:none; transition:0.3s; }
+    .social-box a:hover { transform:scale(1.15); }
+    .footer-line { width:100%; height:1px; background:rgba(255,255,255,0.2); margin:35px 0 18px; }
+    .footer-bottom { text-align:center; color:#94a3b8; font-size:14px; }
+
+    /* =============================================
+       RESPONSIVE — TABLET (max 1100px)
+    ============================================= */
+    @media(max-width:1100px) {
+      .navbar { flex-direction:column; gap:12px; padding:14px 20px; }
+      .nav-center { padding:12px 24px; }
+      .nav-center ul { gap:22px; flex-wrap:wrap; justify-content:center; }
+      section { padding:130px 28px 80px; }
+      .hero h2 { font-size:58px; }
+      .hero p { font-size:18px; }
+      #clubs .section-title h2 { font-size:56px; }
+      .footer-container { grid-template-columns:1fr; text-align:center; }
+      .footer-logo { justify-content:center; }
+      .footer-links { justify-content:center; }
+      .social-box { justify-content:center; }
     }
 
-    /* ================= SECTIONS ================= */
+    /* =============================================
+       RESPONSIVE — MOBILE (max 768px)
+    ============================================= */
+    @media(max-width:768px) {
 
-    section {
-      padding: 120px 50px;
-      position: relative;
-      z-index: 1;
+      /* --- Navbar --- */
+      .navbar { flex-direction:column; gap:10px; padding:12px 16px; }
+      .logo-section img { width:48px; height:48px; }
+      .logo-text h2 { font-size:14px; }
+      .nav-center { padding:10px 16px; width:100%; }
+      .nav-center ul { gap:14px; justify-content:center; flex-wrap:wrap; }
+      .nav-center ul li a { font-size:13px; }
+      .signin-btn { padding:8px 10px 8px 18px; gap:10px; }
+      .signin-btn span { font-size:14px; }
+      .arrow-circle { width:36px; height:36px; font-size:16px; }
+
+      /* --- Section padding --- */
+      section { padding:160px 16px 60px; }
+
+      /* --- Hero --- */
+      .hero { min-height:100svh; }
+      .hero h2 { font-size:38px; line-height:1.15; margin-bottom:18px; }
+      .hero p { font-size:15px; margin-bottom:28px; padding:0 8px; }
+      .btn { padding:14px 32px; font-size:16px; }
+
+      /* --- Section titles --- */
+      .section-title h2 { font-size:34px; }
+      .section-title p { font-size:14px; }
+
+      /* --- Clubs section title --- */
+      #clubs .section-title h2 { font-size:42px; letter-spacing:4px; }
+      #clubs .section-title p { font-size:11px; letter-spacing:2px; }
+
+      /* --- Club cards: 1 column --- */
+      .clubs-container { grid-template-columns:1fr; gap:18px; }
+      .club-img-wrap { height:180px; }
+      .club-body h3 { font-size:24px; }
+      .club-body p.club-desc { font-size:13.5px; }
+      .club-number { font-size:50px; }
+
+      /* --- Gallery: 1 column --- */
+      .gallery-container { grid-template-columns:1fr; gap:16px; }
+      .gallery-container img { height:220px; }
+
+      /* --- Events/Sponsors cards --- */
+      .card img { height:180px; }
+      .card-content h3 { font-size:24px; }
+      .card-content p { font-size:14px; }
+
+      /* --- Footer --- */
+      .footer { padding:36px 20px 16px; }
+      .footer-container { grid-template-columns:1fr; gap:28px; text-align:center; }
+      .footer-logo { justify-content:center; }
+      .footer-logo h2 { font-size:18px; }
+      .footer-tagline { font-size:11px; margin-bottom:20px; }
+      .contact-box h3 { font-size:20px; }
+      .contact-box p { font-size:16px; }
+      .footer-center h2, .footer-right h2 { font-size:22px; margin-bottom:16px; }
+      .footer-links { justify-content:center; gap:30px; }
+      .footer-links a { font-size:15px; }
+      .social-box { justify-content:center; gap:14px; }
+      .social-box a { font-size:26px; }
+      .footer-bottom { font-size:12px; }
     }
 
-    /* ================= HERO ================= */
+    /* =============================================
+       RESPONSIVE — SMALL MOBILE (max 480px)
+    ============================================= */
+    @media(max-width:480px) {
 
-    .hero {
-      position: relative;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      overflow: hidden;
-    }
+      /* Navbar: hide logo text, compact nav */
+      .logo-text { display:none; }
+      .navbar { flex-direction:row; flex-wrap:wrap; justify-content:space-between; padding:10px 14px; gap:8px; }
+      .nav-center { order:3; width:100%; padding:8px 12px; }
+      .nav-center ul { gap:10px; }
+      .nav-center ul li a { font-size:12px; font-weight:700; }
+      .signin-btn { order:2; }
 
-    .overlay {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.45);
-    }
+      /* Hero */
+      section { padding:150px 14px 50px; }
+      .hero h2 { font-size:32px; }
+      .hero p { font-size:14px; }
+      .btn { padding:12px 28px; font-size:15px; }
 
-    .hero-content {
-      position: relative;
-      z-index: 2;
-    }
+      /* Clubs */
+      #clubs .section-title h2 { font-size:36px; letter-spacing:3px; }
+      .clubs-container { gap:14px; }
+      .club-img-wrap { height:160px; }
+      .club-body { padding:16px 18px 20px; }
+      .club-body h3 { font-size:22px; }
+      .club-icon-badge { width:38px; height:38px; font-size:15px; border-radius:10px; }
 
-    .hero h2 {
-      font-size: 90px;
-      line-height: 1.1;
-      margin-bottom: 25px;
-    }
+      /* Gallery */
+      .gallery-container img { height:190px; }
 
-    .hero span {
-      display: block;
-      background: linear-gradient(90deg, #a855f7, #ec4899);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+      /* Cards */
+      .card img { height:160px; }
 
-    .hero p {
-      max-width: 850px;
-      margin: auto;
-      font-size: 26px;
-      color: #d1d5db;
-      margin-bottom: 40px;
-    }
-
-    .btn {
-      padding: 18px 45px;
-      border: none;
-      border-radius: 15px;
-      background: linear-gradient(90deg, #9333ea, #7e22ce);
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .btn:hover {
-      transform: scale(1.05);
-    }
-
-    /* ================= TITLES ================= */
-
-    .section-title {
-      text-align: center;
-      margin-bottom: 60px;
-    }
-
-    .section-title h2 {
-      font-size: 50px;
-      margin-bottom: 15px;
-    }
-
-    .section-title p {
-      color: #cbd5e1;
-      font-size: 18px;
-    }
-
-    /* ================= GRID ================= */
-
-    .clubs-container,
-    .gallery-container,
-    .events-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-    }
-
-    /* ================= CARD ================= */
-
-    .card {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 25px;
-      overflow: hidden;
-      transition: 0.3s;
-      backdrop-filter: blur(10px);
-    }
-
-    .card:hover {
-      transform: translateY(-10px);
-      border-color: #a855f7;
-    }
-
-    .card img {
-      width: 100%;
-      height: 240px;
-      object-fit: cover;
-    }
-
-    .card-content {
-      padding: 25px;
-    }
-
-    .card-content h3 {
-      font-size: 32px;
-      margin-bottom: 15px;
-      color: #a855f7;
-    }
-
-    .card-content p {
-      color: #d1d5db;
-      margin-bottom: 12px;
-      font-size: 17px;
-    }
-
-    /* ================= GALLERY ================= */
-
-    .gallery-container img {
-      width: 100%;
-      height: 320px;
-      object-fit: cover;
-      border-radius: 20px;
-      transition: 0.3s;
-    }
-
-    .gallery-container img:hover {
-      transform: scale(1.03);
-    }
-
-    /* ================= FOOTER ================= */
-
-    .footer {
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(12px);
-      padding: 50px 40px 20px;
-      margin-top: 80px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      position: relative;
-      z-index: 1;
-    }
-
-    .footer-container {
-      display: grid;
-      grid-template-columns: 1.3fr 1fr 1fr;
-      gap: 40px;
-    }
-
-    .footer-logo {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 18px;
-    }
-
-    .footer-logo img {
-      width: 60px;
-      height: 60px;
-      object-fit: contain;
-    }
-
-    .footer-logo h2 {
-      font-size: 24px;
-      font-weight: 800;
-    }
-
-    .footer-tagline {
-      color: #2563eb;
-      letter-spacing: 2px;
-      font-size: 14px;
-      margin-bottom: 35px;
-    }
-
-    .contact-box h3 {
-      font-size: 26px;
-      margin-bottom: 15px;
-    }
-
-    .contact-box p {
-      font-size: 20px;
-      color: white;
-    }
-
-    .footer-center h2,
-    .footer-right h2 {
-      font-size: 28px;
-      margin-bottom: 25px;
-      text-align: center;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 45px;
-    }
-
-    .footer-links div {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .footer-links a {
-      color: #d1d5db;
-      text-decoration: none;
-      font-size: 18px;
-      transition: 0.3s;
-    }
-
-    .footer-links a:hover {
-      color: #3b82f6;
-      transform: translateX(5px);
-    }
-
-    .social-box {
-      display: flex;
-      gap: 18px;
-      margin-top: 10px;
-    }
-
-    .social-box a {
-      font-size: 32px;
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .social-box a:hover {
-      transform: scale(1.15);
-    }
-
-    .robot-box {
-      font-size: 70px;
-      margin-top: 20px;
-      text-align: right;
-    }
-
-    .footer-line {
-      width: 100%;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.2);
-      margin: 35px 0 18px;
-    }
-
-    .footer-bottom {
-      text-align: center;
-      color: #94a3b8;
-      font-size: 14px;
-    }
-
-    /* ================= MOBILE ================= */
-
-    @media(max-width: 1100px) {
-
-      .navbar {
-        flex-direction: column;
-        gap: 20px;
-      }
-
-      .nav-center ul {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 20px;
-      }
-
-      .hero h2 {
-        font-size: 50px;
-      }
-
-      .hero p {
-        font-size: 18px;
-      }
-
-      section {
-        padding: 140px 20px;
-      }
-
-      .footer-container {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-
-      .footer-logo {
-        justify-content: center;
-      }
-
-      .footer-links {
-        justify-content: center;
-      }
-
-      .social-box {
-        justify-content: center;
-      }
-
-      .robot-box {
-        text-align: center;
-      }
+      /* Footer */
+      .footer-links { flex-direction:column; gap:0; align-items:center; }
+      .footer-links div { flex-direction:row; flex-wrap:wrap; justify-content:center; gap:10px 20px; }
     }
 
   </style>
-
 </head>
-
 <body>
-
-  <!-- ================= 3D STAR CANVAS ================= -->
 
   <canvas id="starCanvas"></canvas>
 
-  <!-- ================= NAVBAR ================= -->
-
   <nav class="navbar">
-
     <a href="#home" class="logo-section" id="homeLogo">
-
       <img src="logo.png" alt="logo">
-
       <div class="logo-text">
         <h2>INSTITUTE OF</h2>
         <h2>INNOVATION</h2>
       </div>
-
     </a>
-
     <div class="nav-center">
       <ul>
         <li><a href="#home" class="active">HOME</a></li>
@@ -499,139 +484,216 @@
         <li><a href="#events">EVENTS</a></li>
       </ul>
     </div>
-
     <a href="login.html" class="signin-btn">
       <span>LOGIN</span>
-      <div class="arrow-circle">↗</div>
+      <div class="arrow-circle">&#8599;</div>
     </a>
-
   </nav>
 
-  <!-- ================= HOME ================= -->
-
+  <!-- HOME -->
   <section class="hero" id="home">
-
     <div class="overlay"></div>
-
     <div class="hero-content">
-
-      <h2>
-        Preserve Every
-        <span>College Memory</span>
-      </h2>
-
-      <p>
-        A digital platform where all college
-        events, memories, club achievements,
-        photos and sponsors are stored forever.
-      </p>
-
+      <h2>Preserve Every <span>College Memory</span></h2>
+      <p>A digital platform where all college events, memories, club achievements, photos and sponsors are stored forever.</p>
       <button class="btn">Explore Memories</button>
-
     </div>
-
   </section>
 
-  <!-- ================= CLUBS ================= -->
-
+  <!-- CLUBS -->
   <section id="clubs">
-
     <div class="section-title">
       <h2>Our Clubs</h2>
-      <p>Explore all clubs and their achievements.</p>
+      <p>Explore all clubs and their achievements</p>
     </div>
 
     <div class="clubs-container">
 
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop">
-        <div class="card-content">
-          <h3>Tech Club</h3>
-          <p><b>President:</b> Pranav Sharma</p>
-          <p>Hackathons, coding competitions, technical workshops and projects.</p>
+      <!-- Tech Club -->
+      <div class="club-card" data-theme="tech">
+        <div class="club-img-wrap">
+          <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop" alt="Tech Club">
+          <div class="club-icon-badge"><i class="fa-solid fa-microchip"></i></div>
+          <div class="club-number">01</div>
         </div>
+        <div class="club-body">
+          <div class="club-accent"></div>
+          <h3>Tech Club</h3>
+          <div class="club-president">
+            <div class="club-pres-dot"></div>
+            <span>President &nbsp;<strong>Pranav Sharma</strong></span>
+          </div>
+          <p class="club-desc">Hackathons, coding competitions, technical workshops and cutting-edge projects.</p>
+          <a class="club-pill" href="#">Explore <span class="pill-arrow">&#8594;</span></a>
+        </div>
+        <div class="club-glow-line"></div>
       </div>
 
-      <div class="card">
-        <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1200&auto=format&fit=crop">
-        <div class="card-content">
-          <h3>Social Welfare Club</h3>
-          <p><b>President:</b> Prince Yadav</p>
-          <p>Charity events and awareness programs.</p>
+      <!-- Social Welfare Club -->
+      <div class="club-card" data-theme="welfare">
+        <div class="club-img-wrap">
+          <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=1200&auto=format&fit=crop" alt="Social Welfare Club">
+          <div class="club-icon-badge"><i class="fa-solid fa-heart"></i></div>
+          <div class="club-number">02</div>
         </div>
+        <div class="club-body">
+          <div class="club-accent"></div>
+          <h3>Social Welfare Club</h3>
+          <div class="club-president">
+            <div class="club-pres-dot"></div>
+            <span>President &nbsp;<strong>Prince Yadav</strong></span>
+          </div>
+          <p class="club-desc">Charity drives, community outreach, and awareness programs for a better world.</p>
+          <a class="club-pill" href="#">Explore <span class="pill-arrow">&#8594;</span></a>
+        </div>
+        <div class="club-glow-line"></div>
+      </div>
+
+      <!-- Sports Club -->
+      <div class="club-card" data-theme="sports">
+        <div class="club-img-wrap">
+          <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=1200&auto=format&fit=crop" alt="Sports Club">
+          <div class="club-icon-badge"><i class="fa-solid fa-trophy"></i></div>
+          <div class="club-number">03</div>
+        </div>
+        <div class="club-body">
+          <div class="club-accent"></div>
+          <h3>Sports Club</h3>
+          <div class="club-president">
+            <div class="club-pres-dot"></div>
+            <span>President &nbsp;<strong>Rahul Verma</strong></span>
+          </div>
+          <p class="club-desc">Cricket, football, basketball tournaments and fierce inter-college sports competitions.</p>
+          <a class="club-pill" href="#">Explore <span class="pill-arrow">&#8594;</span></a>
+        </div>
+        <div class="club-glow-line"></div>
+      </div>
+
+      <!-- Cultural Club -->
+      <div class="club-card" data-theme="cultural">
+        <div class="club-img-wrap">
+          <img src="https://images.unsplash.com/photo-1504609813442-a8924e83f76e?q=80&w=1200&auto=format&fit=crop" alt="Cultural Club">
+          <div class="club-icon-badge"><i class="fa-solid fa-masks-theater"></i></div>
+          <div class="club-number">04</div>
+        </div>
+        <div class="club-body">
+          <div class="club-accent"></div>
+          <h3>Cultural Club</h3>
+          <div class="club-president">
+            <div class="club-pres-dot"></div>
+            <span>President &nbsp;<strong>Anika Singh</strong></span>
+          </div>
+          <p class="club-desc">Dance, music, drama, and cultural fests celebrating diversity and vibrant talent.</p>
+          <a class="club-pill" href="#">Explore <span class="pill-arrow">&#8594;</span></a>
+        </div>
+        <div class="club-glow-line"></div>
+      </div>
+
+      <!-- Content Creation Club -->
+      <div class="club-card" data-theme="content">
+        <div class="club-img-wrap">
+          <img src="https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?q=80&w=1200&auto=format&fit=crop" alt="Content Creation Club">
+          <div class="club-icon-badge"><i class="fa-solid fa-camera"></i></div>
+          <div class="club-number">05</div>
+        </div>
+        <div class="club-body">
+          <div class="club-accent"></div>
+          <h3>Content Creation Club</h3>
+          <div class="club-president">
+            <div class="club-pres-dot"></div>
+            <span>President &nbsp;<strong>Meera Joshi</strong></span>
+          </div>
+          <p class="club-desc">Blogs, videos, podcasts, and social media stories that showcase college life.</p>
+          <a class="club-pill" href="#">Explore <span class="pill-arrow">&#8594;</span></a>
+        </div>
+        <div class="club-glow-line"></div>
+      </div>
+
+      <!-- Business Club -->
+      <div class="club-card" data-theme="business">
+        <div class="club-img-wrap">
+          <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop" alt="Business Club">
+          <div class="club-icon-badge"><i class="fa-solid fa-briefcase"></i></div>
+          <div class="club-number">06</div>
+        </div>
+        <div class="club-body">
+          <div class="club-accent"></div>
+          <h3>Business Club</h3>
+          <div class="club-president">
+            <div class="club-pres-dot"></div>
+            <span>President &nbsp;<strong>Arjun Kapoor</strong></span>
+          </div>
+          <p class="club-desc">Startup pitches, case competitions, entrepreneurship talks and business workshops.</p>
+          <a class="club-pill" href="#">Explore <span class="pill-arrow">&#8594;</span></a>
+        </div>
+        <div class="club-glow-line"></div>
+      </div>
+
+      <!-- Robotics Club -->
+      <div class="club-card" data-theme="robotics">
+        <div class="club-img-wrap">
+          <img src="https://images.unsplash.com/photo-1561144257-e32e8efc6c4f?q=80&w=1200&auto=format&fit=crop" alt="Robotics Club">
+          <div class="club-icon-badge"><i class="fa-solid fa-robot"></i></div>
+          <div class="club-number">07</div>
+        </div>
+        <div class="club-body">
+          <div class="club-accent"></div>
+          <h3>Robotics Club</h3>
+          <div class="club-president">
+            <div class="club-pres-dot"></div>
+            <span>President &nbsp;<strong>Dev Patel</strong></span>
+          </div>
+          <p class="club-desc">Robot building, automation projects, and national-level robotics competitions.</p>
+          <a class="club-pill" href="#">Explore <span class="pill-arrow">&#8594;</span></a>
+        </div>
+        <div class="club-glow-line"></div>
       </div>
 
     </div>
-
   </section>
 
-  <!-- ================= GALLERY ================= -->
-
+  <!-- GALLERY -->
   <section id="gallery">
-
     <div class="section-title">
       <h2>Gallery</h2>
       <p>Relive unforgettable moments.</p>
     </div>
-
     <div class="gallery-container">
       <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1200&auto=format&fit=crop">
       <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop">
       <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop">
     </div>
-
   </section>
 
-  <!-- ================= SPONSORS ================= -->
-
+  <!-- SPONSORS -->
   <section id="sponsors">
-
     <div class="section-title">
       <h2>Our Sponsors</h2>
       <p>Proud partners supporting our college events.</p>
     </div>
-
-    <div class="clubs-container">
-
+    <div class="clubs-container" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px;">
       <div class="card">
         <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1200&auto=format&fit=crop">
-        <div class="card-content">
-          <h3>TechNova</h3>
-          <p>Main sponsor of coding competitions and hackathons.</p>
-        </div>
+        <div class="card-content"><h3>TechNova</h3><p>Main sponsor of coding competitions and hackathons.</p></div>
       </div>
-
       <div class="card">
         <img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1200&auto=format&fit=crop">
-        <div class="card-content">
-          <h3>EduFuture</h3>
-          <p>Supporting educational innovation and workshops.</p>
-        </div>
+        <div class="card-content"><h3>EduFuture</h3><p>Supporting educational innovation and workshops.</p></div>
       </div>
-
       <div class="card">
         <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop">
-        <div class="card-content">
-          <h3>CodeCraft</h3>
-          <p>Partner for technical events and robotics activities.</p>
-        </div>
+        <div class="card-content"><h3>CodeCraft</h3><p>Partner for technical events and robotics activities.</p></div>
       </div>
-
     </div>
-
   </section>
 
-  <!-- ================= EVENTS ================= -->
-
+  <!-- EVENTS -->
   <section id="events">
-
     <div class="section-title">
       <h2>Upcoming Events</h2>
       <p>Stay updated with all activities.</p>
     </div>
-
     <div class="events-container">
-
       <div class="card">
         <div class="card-content">
           <h3>National Hackathon</h3>
@@ -639,37 +701,25 @@
           <button class="btn">Register</button>
         </div>
       </div>
-
     </div>
-
   </section>
 
-  <!-- ================= FOOTER ================= -->
-
+  <!-- FOOTER -->
   <footer class="footer">
-
     <div class="footer-container">
-
       <div class="footer-left">
-
         <div class="footer-logo">
           <img src="logo.png" alt="logo">
           <h2>INSTITUTE OF INNOVATION</h2>
         </div>
-
         <p class="footer-tagline">INNOVATING FOR A SUSTAINABLE FUTURE</p>
-
         <div class="contact-box">
           <h3>Contact Us:</h3>
-          <p>✉ studentsuccess@pwioi.com</p>
+          <p>&#9993; studentsuccess@pwioi.com</p>
         </div>
-
       </div>
-
       <div class="footer-center">
-
         <h2>Quick Access</h2>
-
         <div class="footer-links">
           <div>
             <a href="#home">Home</a>
@@ -682,247 +732,144 @@
             <a href="#">Contact</a>
           </div>
         </div>
-
       </div>
-
       <div class="footer-right">
-
         <h2>Follow Us</h2>
-
         <div class="social-box">
-          <a href="https://www.instagram.com/aryaaryanpro922?igsh=ZTlmank4a3ppOHRh"><i class="fa-brands fa-instagram" style="color: magenta;"></i></a>
+          <a href="https://www.instagram.com/aryaaryanpro922?igsh=ZTlmank4a3ppOHRh"><i class="fa-brands fa-instagram" style="color:magenta;"></i></a>
           <a href="https://www.linkedin.com/in/aryankumaryadav73?utm_source=share_via&utm_content=profile&utm_medium=member_android"><i class="fa-brands fa-linkedin"></i></a>
-          <a href="https://youtube.com/@pw-ioi?si=QukHeBpd_92y2Q3F"><i class="fa-brands fa-youtube" style="color: red;"></i></a>
+          <a href="https://youtube.com/@pw-ioi?si=QukHeBpd_92y2Q3F"><i class="fa-brands fa-youtube" style="color:red;"></i></a>
           <a href="#"><i class="fa-brands fa-facebook"></i></a>
-          <a href="https://wa.link/3156q6"><i class="fa-brands fa-whatsapp" style="color: green;"></i></a>
+          <a href="https://wa.link/3156q6"><i class="fa-brands fa-whatsapp" style="color:green;"></i></a>
         </div>
-
       </div>
-
     </div>
-
     <div class="footer-line"></div>
-
-    <div class="footer-bottom">
-      © 2026 College Memories Platform | All Rights Reserved
-    </div>
-
+    <div class="footer-bottom">&#169; 2026 College Memories Platform | All Rights Reserved</div>
   </footer>
 
-  <!-- ================= THREE.JS CDN ================= -->
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-  <!-- ================= JAVASCRIPT ================= -->
-
   <script>
 
-    /* =========================================
-       3D STAR FIELD BACKGROUND
-    ========================================= */
-
+    /* ---- 3D Star Field ---- */
     const canvas = document.getElementById('starCanvas');
-
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      alpha: true
-    });
-
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
-
     const scene = new THREE.Scene();
-
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      2000
-    );
-
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
     camera.position.z = 1;
-
-    /* --- Generate Stars --- */
 
     const starCount = 8000;
     const positions = new Float32Array(starCount * 3);
-    const sizes     = new Float32Array(starCount);
-
+    const sizes = new Float32Array(starCount);
     for (let i = 0; i < starCount; i++) {
-      positions[i * 3]     = (Math.random() - 0.5) * 2000;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 2000;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 2000;
-      sizes[i] = Math.random() * 2 + 0.5;
+      positions[i*3]   = (Math.random()-0.5)*2000;
+      positions[i*3+1] = (Math.random()-0.5)*2000;
+      positions[i*3+2] = (Math.random()-0.5)*2000;
+      sizes[i] = Math.random()*2+0.5;
     }
-
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('size',     new THREE.BufferAttribute(sizes,     1));
-
-    const material = new THREE.PointsMaterial({
-      color:           0xffffff,
-      size:            1.2,
-      sizeAttenuation: true,
-      transparent:     true,
-      opacity:         0.85
-    });
-
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
+    geometry.setAttribute('size',     new THREE.BufferAttribute(sizes,1));
+    const material = new THREE.PointsMaterial({ color:0xffffff, size:1.2, sizeAttenuation:true, transparent:true, opacity:0.85 });
     const stars = new THREE.Points(geometry, material);
     scene.add(stars);
 
-    /* --- Mouse Tracking --- */
-
-    let mouseX = 0, mouseY = 0;
-    let targetX = 0, targetY = 0;
-
-    document.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
-      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    let mouseX=0, mouseY=0, targetX=0, targetY=0;
+    document.addEventListener('mousemove', e => {
+      mouseX = (e.clientX/window.innerWidth -0.5)*2;
+      mouseY = (e.clientY/window.innerHeight-0.5)*2;
     });
-
-    /* --- Resize Handler --- */
-
     window.addEventListener('resize', () => {
       renderer.setSize(window.innerWidth, window.innerHeight);
-      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.aspect = window.innerWidth/window.innerHeight;
       camera.updateProjectionMatrix();
     });
-
-    /* --- Animation Loop --- */
-
     function animate() {
-
       requestAnimationFrame(animate);
-
-      // Smooth easing towards mouse position
-      targetX += (mouseX - targetX) * 0.04;
-      targetY += (mouseY - targetY) * 0.04;
-
-      // Rotate star field based on mouse
-      stars.rotation.y =  targetX * 0.4;
-      stars.rotation.x =  targetY * 0.2;
-
-      // Slow continuous auto-drift
+      targetX += (mouseX-targetX)*0.04;
+      targetY += (mouseY-targetY)*0.04;
+      stars.rotation.y =  targetX*0.4;
+      stars.rotation.x =  targetY*0.2;
       stars.rotation.z += 0.0003;
-
       renderer.render(scene, camera);
     }
-
     animate();
 
-    /* =========================================
-       NAVIGATION LOGIC
-    ========================================= */
-
+    /* ---- Navigation ---- */
+    const clubCards = document.querySelectorAll('.club-card');
     const navLinks = document.querySelectorAll('.nav-center ul li a');
-
-    const sections = [
-      '#home',
-      '#clubs',
-      '#gallery',
-      '#sponsors',
-      '#events'
-    ];
-
+    const sections = ['#home','#clubs','#gallery','#sponsors','#events'];
     let activeLink = document.querySelector('a[href="#home"]');
 
-    /* --- Show Section Function --- */
-
     function showSection(target) {
-
       if (target === '#home') {
-
-        document.querySelector('#home').style.display    = 'flex';
-        document.querySelector('#clubs').style.display   = 'block';
-        document.querySelector('#gallery').style.display = 'block';
-        document.querySelector('#sponsors').style.display = 'block';
-        document.querySelector('#events').style.display  = 'block';
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      } else {
-
-        sections.forEach(section => {
-          document.querySelector(section).style.display =
-            section === target ? 'block' : 'none';
+        sections.forEach(s => {
+          document.querySelector(s).style.display = s === '#home' ? 'flex' : 'block';
         });
-
+      } else {
+        sections.forEach(s => {
+          document.querySelector(s).style.display = s === target ? 'block' : 'none';
+        });
+        // Re-trigger club card reveal if clubs section just became visible
+        if (target === '#clubs') {
+          clubCards.forEach((card, i) => {
+            card.classList.remove('visible');
+            setTimeout(() => card.classList.add('visible'), i * 80);
+          });
+        }
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    /* --- Nav Click --- */
-
     navLinks.forEach(link => {
-
       link.addEventListener('click', function(e) {
-
         e.preventDefault();
-
         navLinks.forEach(item => {
           item.classList.remove('active');
-          item.style.color      = '#a1a1aa';
+          item.style.color = '#a1a1aa';
           item.style.textShadow = 'none';
-          item.style.transform  = 'scale(1)';
+          item.style.transform = 'scale(1)';
         });
-
         this.classList.add('active');
-        this.style.color      = '#3b82f6';
+        this.style.color = '#3b82f6';
         this.style.textShadow = '0 0 10px #3b82f6, 0 0 20px #3b82f6';
         activeLink = this;
-
         showSection(this.getAttribute('href'));
-
       });
-
-      /* --- Hover In --- */
-
       link.addEventListener('mouseenter', function() {
-        if (this !== activeLink) {
-          this.style.color      = '#3b82f6';
-          this.style.transform  = 'scale(1.18)';
-          this.style.textShadow = '0 0 10px #3b82f6, 0 0 20px #3b82f6';
-        }
+        if (this !== activeLink) { this.style.color='#3b82f6'; this.style.transform='scale(1.18)'; this.style.textShadow='0 0 10px #3b82f6, 0 0 20px #3b82f6'; }
       });
-
-      /* --- Hover Out --- */
-
       link.addEventListener('mouseleave', function() {
-        if (this !== activeLink) {
-          this.style.color      = '#a1a1aa';
-          this.style.transform  = 'scale(1)';
-          this.style.textShadow = 'none';
-        }
+        if (this !== activeLink) { this.style.color='#a1a1aa'; this.style.transform='scale(1)'; this.style.textShadow='none'; }
       });
-
     });
 
-    /* --- Logo Click --- */
-
-    const homeLogo = document.getElementById('homeLogo');
-
-    homeLogo.addEventListener('click', function(e) {
-
+    document.getElementById('homeLogo').addEventListener('click', function(e) {
       e.preventDefault();
-
-      navLinks.forEach(item => {
-        item.classList.remove('active');
-        item.style.color      = '#a1a1aa';
-        item.style.textShadow = 'none';
-        item.style.transform  = 'scale(1)';
-      });
-
+      navLinks.forEach(item => { item.classList.remove('active'); item.style.color='#a1a1aa'; item.style.textShadow='none'; item.style.transform='scale(1)'; });
       const homeLink = document.querySelector('a[href="#home"]');
       homeLink.classList.add('active');
-      homeLink.style.color      = '#3b82f6';
-      homeLink.style.textShadow = '0 0 10px #3b82f6, 0 0 20px #3b82f6';
+      homeLink.style.color='#3b82f6';
+      homeLink.style.textShadow='0 0 10px #3b82f6, 0 0 20px #3b82f6';
       activeLink = homeLink;
-
       showSection('#home');
-
     });
 
+    /* ---- Scroll Reveal for Club Cards (initial page load) ---- */
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          const delay = Array.from(clubCards).indexOf(entry.target) * 80;
+          setTimeout(() => entry.target.classList.add('visible'), delay);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    clubCards.forEach(card => observer.observe(card));
+
   </script>
-
 </body>
-
 </html>
