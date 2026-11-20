@@ -173,6 +173,27 @@ app.get("/check-session", (req, res) => {
     });
 });
 
+
+// LOGOUT API
+app.post("/logout", (req, res) => {
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(401).json({
+            success: false,
+            message: "No authentication token found"
+        });
+    }
+
+    sessionStore.delete(token);
+
+    res.json({
+        success: true,
+        message: "Logged out successfully"
+    });
+});
+
+
 app.listen(3000, () => {
     console.log("Server running at http://localhost:3000");
 });

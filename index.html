@@ -3,10 +3,57 @@
 <head>
 
     <script>
-    if (localStorage.getItem("isLoggedIn") !== "true") {
-        window.location.href = "login.html";
+async function checkAuthentication() {
+
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+        window.location.replace("login.html");
+        return;
     }
-    </script>
+
+    try {
+
+        const response = await fetch("http://localhost:3000/check-session", {
+            method: "GET",
+            headers: {
+                "Authorization": token
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("userEmail");
+
+            window.location.replace("login.html");
+            return;
+        }
+
+        console.log("Authenticated user:", data.email);
+
+    } catch (error) {
+
+        console.error("Authentication error:", error);
+
+        alert("Unable to verify your session. Please try again.");
+
+    }
+}
+
+checkAuthentication();
+
+document.getElementById("logout-btn").addEventListener("click", async function() {
+
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userEmail");
+
+    window.location.replace("login.html");
+
+});
+</script>
 
 
     <!-- your existing code -->
@@ -484,10 +531,10 @@
         <li><a href="#events">EVENTS</a></li>
       </ul>
     </div>
-    <a href="login.html" class="signin-btn">
-      <span>LOGIN</span>
-      <div class="arrow-circle">&#8599;</div>
-    </a>
+    <button type="button" class="signin-btn" id="logout-btn">
+        <span>LOGOUT</span>
+        <div class="arrow-circle">&#8599;</div>
+    </button>
   </nav>
 
   <!-- HOME -->
@@ -869,6 +916,34 @@
     }, { threshold: 0.12 });
 
     clubCards.forEach(card => observer.observe(card));
+
+
+document.getElementById("logout-btn").addEventListener("click", async function () {
+
+    const token = localStorage.getItem("authToken");
+
+    try {
+        if (token) {
+            await fetch("http://localhost:3000/logout", {
+                method: "POST",
+                headers: {
+                    "Authorization": token
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Logout API error:", error);
+    } finally {
+        // Clear login information from browser
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("userEmail");
+
+        // Redirect to login page
+        window.location.replace("login.html");
+    }
+
+});
+
 
   </script>
 </body>

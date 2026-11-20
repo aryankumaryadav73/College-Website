@@ -684,11 +684,11 @@ loginButton.addEventListener("click", async function () {
 
     alert("Login successful!");
 
-    localStorage.setItem("isLoggedIn", "true");
+    localStorage.setItem("authToken", data.token);
+    localStorage.setItem("userEmail", data.email);
 
-    window.location.href = "index.html";
+    window.location.replace("index.html");
 }
-
          else {
 
             alert(data.message);
